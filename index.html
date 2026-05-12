@@ -1,11 +1,138 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Play & Build</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<title>Lily's World</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Lily's World">
+
+<style>
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+-webkit-tap-highlight-color: transparent;
+-webkit-user-select: none;
+user-select: none;
+}
+
+html, body {
+height: 100%;
+overflow: hidden;
+font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+background: #FFF8E7;
+}
+
+.app {
+display: flex;
+flex-direction: column;
+height: 100vh;
+width: 100vw;
+}
+
+.header {
+background: #FF6B9D;
+color: white;
+padding: 16px;
+text-align: center;
+font-size: 28px;
+font-weight: bold;
+letter-spacing: 1px;
+box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+flex-shrink: 0;
+}
+
+.stage {
+flex: 1;
+background: #B8E0F6;
+position: relative;
+display: flex;
+align-items: flex-end;
+justify-content: center;
+overflow: hidden;
+padding-bottom: 20px;
+}
+
+.lily {
+max-height: 90%;
+max-width: 60%;
+height: auto;
+width: auto;
+object-fit: contain;
+}
+
+.tabs {
+background: white;
+display: flex;
+border-top: 4px solid #333;
+flex-shrink: 0;
+}
+
+.tab {
+flex: 1;
+padding: 14px;
+text-align: center;
+font-size: 18px;
+font-weight: bold;
+color: #333;
+background: white;
+border-right: 3px solid #333;
+cursor: pointer;
+}
+
+.tab:last-child {
+border-right: none;
+}
+
+.tab.active {
+background: #FF6B9D;
+color: white;
+}
+
+.toolbox {
+background: #FFE5B4;
+padding: 16px;
+min-height: 110px;
+display: flex;
+gap: 12px;
+justify-content: center;
+align-items: center;
+flex-wrap: wrap;
+flex-shrink: 0;
+border-top: 4px solid #333;
+}
+
+.placeholder-text {
+color: #888;
+font-size: 14px;
+font-style: italic;
+text-align: center;
+padding: 8px;
+}
+</style>
 </head>
-<body style="font-family: sans-serif; text-align: center; padding: 50px;">
-  <h1>👋 Hello!</h1>
-  <p>Play &amp; Build is coming soon.</p>
+
+<body>
+<div class="app">
+
+<div class="header">🎨 Lily's World</div>
+
+<div class="stage">
+<img src="lily.png" alt="Lily" class="lily">
+</div>
+
+<div class="tabs">
+<div class="tab active">Hats</div>
+<div class="tab">Glasses</div>
+<div class="tab">Pets</div>
+</div>
+
+<div class="toolbox">
+<span class="placeholder-text">Accessories coming soon -- generating with ChatGPT!</span>
+</div>
+
+</div>
 </body>
 </html>
