@@ -55,28 +55,21 @@
       padding-bottom: 20px;
     }
 
-    .character {
-      position: relative;
+    .lily {
       max-height: 90%;
       max-width: 60%;
-      display: grid;
-      place-items: end center;
-    }
-
-    .lily {
-      grid-area: 1 / 1;
-      max-height: 100%;
-      max-width: 100%;
       height: auto;
       width: auto;
       object-fit: contain;
-      display: block;
     }
 
     .lily-overlay {
-      grid-area: 1 / 1;
-      max-height: 100%;
-      max-width: 100%;
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      max-height: 90%;
+      max-width: 60%;
       height: auto;
       width: auto;
       object-fit: contain;
@@ -214,10 +207,8 @@
     <div class="header">🎨 Play &amp; Build</div>
 
     <div class="stage">
-      <div class="character">
-        <img src="lily_long_brown.png" alt="Lily" class="lily" id="lilyImg">
-        <img src="" alt="" class="lily-overlay hidden" id="topOverlay">
-      </div>
+      <img src="lily_long_brown.png" alt="Lily" class="lily" id="lilyImg">
+      <img src="" alt="" class="lily-overlay hidden" id="topOverlay">
     </div>
 
     <!-- Row 1: Mode Toggle -->
