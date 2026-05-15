@@ -1,0 +1,376 @@
+# Play & Build — Design Doc (v3)
+
+**App name:** Play & Build
+**Built for:** my daughter Lydia, age 9–12
+**Built by:** me (beginner) + Claude + Lydia (art director)
+**Hardware:** iPad (player device) + MacBook (developer device, new!)
+**Distribution:** PWA installed via "Add to Home Screen"
+**Repo:** github.com/bradleywpoole-ux/play-and-build
+**Live URL:** https://bradleywpoole-ux.github.io/play-and-build/
+**Status:** ✅ Phase 2 partially complete — Hair Style swapping works! Architecture pivot decided.
+
+---
+
+## What the app does (in one sentence)
+
+Lydia customizes a character named Lily (clothes, hair, accessories, pet) and places her in different environments to play.
+
+---
+
+## Core principles
+
+- Big buttons, friendly colors, kid-appropriate
+- No ads, no logins, no data collection, no external links
+- Works offline once installed
+- Forgiving — any combination of choices should look reasonable
+- Free to host (GitHub Pages)
+- Built incrementally — every session ends with a working app
+- **Modular layered architecture** — every element is a separate overlay layer
+- **PWA forever** — staying as a Progressive Web App, NOT submitting to the App Store
+
+---
+
+## ✅ What's done (end of Session 2)
+
+### Session 1 wins
+- Setup complete (GitHub, hosting, PWA install)
+- Lily character chosen (AI-generated chibi girl)
+- Framework built: header, stage, scrolling categories, options row
+- Mode toggle (Lily/World)
+- 7 Lily categories defined, 6 World categories defined
+- App live on iPad as home-screen PWA
+
+### Session 2 wins
+- ✅ **Hair Style mechanic WORKING** — tap an option, Lily transforms
+- ✅ 3 hair style variants generated (long, bob, ponytail — all brown)
+- ✅ Bald Lily base generated (will be removed from UI — Lydia's request)
+- ✅ Discovered the **direct file-upload workflow** (no more copy-paste pain)
+- ✅ Architecture decision: **layered overlays for everything going forward** (Brad's insight)
+- ✅ MacBook adopted as the dev machine (huge workflow upgrade)
+
+---
+
+## 🏗️ THE ARCHITECTURE DECISION (most important section)
+
+### The problem we identified
+
+If every combination = a separate PNG file, file count grows exponentially:
+
+| Categories supported | Files needed (variant approach) |
+|---|---|
+| Just hair × colors | 25 |
+| + 4 tops | 100 |
+| + 3 bottoms | 300 |
+| + 3 shoes | 900 |
+| + 5 accessories | 4,500 |
+| + 3 pets | **13,500** |
+
+This is called **combinatorial explosion**. We hit this realization in Session 2.
+
+### The solution: Layered overlays
+
+Every element is a separate transparent PNG, stacked at runtime:
+
+```
+Top layer:    🐶 Pet (positioned beside Lily)
+              ⌚ Accessory (overlay on head/face)
+              👕 Top (overlay on torso)
+              👖 Bottom (overlay on legs)
+              👟 Shoes (overlay on feet)
+              💇 Hair (overlay on head)
+Bottom layer: 👤 Base bald Lily (the canvas)
+```
+
+**Result:** ~44 files supports the same customization that would require 13,500 variant PNGs.
+
+### What this means for already-built work
+
+- **Hair Style currently uses full Lily variants** (long_brown, bob_brown, ponytail_brown). These work but aren't aligned with the new architecture.
+- **Long-term:** refactor hair to overlays on a bald base
+- **Short-term:** keep hair variants working, start NEW categories (tops, etc.) as overlays
+- **Decision:** Phase 3 starts the migration to overlays. Don't refactor hair until we hit pain.
+
+### Honest trade-offs of overlays
+
+| Pros | Cons |
+|---|---|
+| 300× file efficiency | Each overlay is harder for AI to generate |
+| Any combination "just works" | Each needs precise sizing/positioning |
+| Adding 1 new item doesn't require regenerating others | More code complexity |
+| Real character-builder architecture | Dresses are tricky (cover both torso AND legs) |
+
+---
+
+## 🎨 Current category structure
+
+### Lily mode (customize her)
+| Category | Status | Approach |
+|---|---|---|
+| 🎨 Hair Color | Not built | Tint overlay or generate hair in multiple colors |
+| 💇 Hair Style | ✅ **WORKING** | Currently full variants. Will migrate to overlays. |
+| 👀 Eyes | Not built | Probably overlay PNGs |
+| 👕 **Top** | **Next priority** | **Layered overlay** |
+| 👖 **Bottom** | Not built | Layered overlay |
+| ⌚ Accessories | Not built | Layered overlay (hat on head, glasses on face) |
+| 🐾 Pet | Not built | Positioned beside Lily |
+
+### World mode (build the scene)
+| Category | Status | Notes |
+|---|---|---|
+| 🌳 Trees | Not built | Tap-to-place |
+| 🌷 Flowers | Not built | Tap-to-place |
+| ☀️ Sky | Not built | Replaces background |
+| 💧 Water | Not built | Tap-to-place |
+| 🪑 Furniture | Not built | Tap-to-place |
+| 🏔️ Background | Not built | Full-stage backdrop |
+
+---
+
+## 🗺️ Updated trade-offs (revised after Session 2 insights)
+
+| Category | Art complexity | Code complexity | Wow factor | Recommended order |
+|---|---|---|---|---|
+| **Hair Style** | ✅ DONE | ✅ DONE | High | — |
+| **Top (overlay)** | Medium (AI fights overlay generation) | Medium (positioning) | High | **NEXT** |
+| **Bottom (overlay)** | Medium | Medium | High | Phase 3 |
+| **Accessories (hats/glasses)** | Easier (smaller overlays) | Easy | High | Phase 4 |
+| **Pet (next to Lily)** | Easy | Easy | High | Phase 4 |
+| **Hair Color** | Easy (regenerate hair variants in colors) | Easy | Medium | Phase 5 |
+| **Scene placement (World)** | Easy per item | HARD (tap-place engine) | High | LAST |
+
+---
+
+## 🛠️ The workflow (REVISED IN SESSION 2)
+
+### Current workflow (iPad — what we used)
+1. Talk to Claude in chat
+2. Claude generates file
+3. **Download file directly to iPad's Files app**
+4. Go to `github.com/bradleywpoole-ux/play-and-build`
+5. Tap "Add file" → "Upload files" → select index.html
+6. Commit (replaces existing file)
+7. Wait 30 seconds → refresh app on iPad
+
+**Key insight from Session 2:** Direct file upload bypasses ALL copy-paste corruption issues (smart quotes, truncation, email mess).
+
+### New workflow (MacBook — starting now)
+Better, but still using GitHub web. Even better with Claude Code.
+
+**Without Claude Code (browser-based):**
+1. Talk to Claude in Safari/Chrome on Mac
+2. Claude generates file
+3. Drag file to Finder
+4. Drag file to GitHub web (or use GitHub Desktop app)
+5. Commit
+6. App auto-updates on Lydia's iPad
+
+**With Claude Code (future state):**
+1. Tell Claude: "Add 3 more hair colors"
+2. Claude reads repo, edits files, commits
+3. App auto-updates on iPad
+4. Done.
+
+This is the destination workflow.
+
+---
+
+## 💻 Hardware setup
+
+| Device | Role |
+|---|---|
+| **iPad (Lydia's)** | The player device — where the app runs |
+| **MacBook (Lydia's)** | The dev machine — where Brad builds |
+| **ChatGPT (any device)** | Art generation (still the best tool for chibi art) |
+
+**Important:** Brad uses MacBook to build. Lydia uses iPad to play. Both pull from the same GitHub repo. The dev↔play loop: 30 seconds.
+
+---
+
+## 🎯 Roadmap (updated after Session 2)
+
+### ✅ Phase 1: Foundation (DONE)
+- Setup, character, framework
+
+### ✅ Phase 2: First Customization (DONE)
+- Hair Style mechanic works
+- Currently uses full-variant approach
+
+### 🔨 Phase 3: Tops (NEXT — overlay architecture)
+**Goal:** Tap a top → it appears on Lily, layered over her base body.
+
+**Plan:**
+- Generate 1 test top as overlay (pink hoodie)
+- Verify it positions correctly on Lily
+- If yes: generate the hybrid set (2 styles × 3 colors = 6 tops)
+- Wire up Top category with layered rendering
+- Remove "Bald" from Hair Style (Lydia's request)
+
+### 🌱 Phase 4: Expand Lily Customizations
+- Bottoms (overlays)
+- Accessories (overlays — hat, glasses, jewelry)
+- Pet (positioned image beside Lily)
+- Hair Color (multiple Lily variants per style OR overlay tint)
+
+### 🏞️ Phase 5: Refactor Hair to Overlays
+- Once overlay system is proven on tops/bottoms/accessories
+- Generate bald Lily as definitive base
+- Re-create hair styles as overlays
+- Now ANY combination is possible (bob + pink hoodie + jeans + cat)
+
+### 🌳 Phase 6: World Mode (Scene Building)
+- Tap-to-place system
+- Trees, flowers, etc.
+- Drag-to-move
+- Background environments
+
+### 🌟 Phase 7: Polish & Wow Features
+- Save/load characters
+- Animations
+- Sound effects
+- Multiple characters
+- Day/night, weather
+- Lydia's hand-drawn Lily as alternate base
+
+---
+
+## 📐 What we've ruled out (and why)
+
+| Idea | Why not |
+|---|---|
+| Photo-real characters | Breaks offline + customization |
+| 3D characters | Way out of scope |
+| SVG-drawn characters from scratch | **Tried it. Failed.** Looked like a "bald man." |
+| App Store submission | PWA forever. No Mac/Xcode/$99 commitment. |
+| Logins / accounts | Hard rule: no data collection. |
+| Cloud save | Local storage only. |
+| Full-variant architecture | **Decided against** — combinatorial explosion |
+| Email-pasting code | **Discontinued** — smart quotes / truncation corruption |
+| Textastic for code editing | **Phased out** — direct file upload is better |
+| Working Copy for routine pushes | **Phased out** — GitHub web is simpler |
+
+---
+
+## 💡 Key decisions from Session 2
+
+1. **Hair Style works as full variants** — keep for now, refactor in Phase 5
+2. **Remove "Bald" option** from Hair Style UI (Lydia's feedback)
+3. **All NEW additions use layered overlays** — Tops, Bottoms, Accessories, Pet
+4. **Direct file upload to GitHub** is the new code workflow
+5. **MacBook is the dev machine** going forward
+6. **ChatGPT stays for art generation** — Claude isn't well-suited to chibi character art
+7. **Color consistency** across overlays matters (matching pinks, blues, etc.)
+8. **Hybrid for Tops:** 2 styles × 3 colors = 6 items (not flat list, not deep menu)
+
+---
+
+## ⚠️ Known reality checks
+
+- **AI overlay generation is harder than full character generation.** Expect 2-3 tries per overlay.
+- **Color matching between AI generations is imperfect.** "Pink" in one image may be slightly different in another.
+- **Each new overlay needs positioning code.** First item in each category takes the most work; subsequent items reuse the position.
+- **Dresses are an edge case.** They cover both torso AND legs — need special handling in the overlay system.
+- **iPad-only is no longer the constraint.** MacBook unlocks much faster iteration.
+
+---
+
+## 🚀 Suggested next session plan
+
+1. **Confirm Lydia is excited about Tops next**
+2. **On the MacBook**, log into claude.ai
+3. **Open the Play & Build project**
+4. **Tell Claude:** "I'm back, working on MacBook now. Lydia wants tops. Remove the Bald option from Hair Style first. Then let's generate one test pink hoodie overlay."
+5. **Generate test hoodie in ChatGPT** using the overlay prompt
+6. **Test positioning** on Lily
+7. **If it works:** generate remaining 5 tops in the hybrid (dress/hoodie × pink/blue/yellow)
+8. **If it doesn't:** debug positioning, possibly tweak prompt, possibly accept full variants as fallback
+
+**Estimated time:** 1-2 hours including art generation.
+
+---
+
+## 📁 Repo file structure
+
+### Current
+```
+play-and-build/
+├── index.html              ← the whole app
+├── lily.png                ← original character (no longer used)
+├── lily_bald.png           ← bald base (Phase 5)
+├── lily_long_brown.png     ← active default
+├── lily_bob_brown.png      ← Hair Style option
+├── lily_ponytail_brown.png ← Hair Style option
+└── README.md
+```
+
+### After Phase 3 (with Tops added)
+```
+play-and-build/
+├── index.html
+├── lily_long_brown.png         ← base (until Phase 5)
+├── lily_bob_brown.png
+├── lily_ponytail_brown.png
+├── top_dress_pink.png          ← overlay
+├── top_dress_blue.png          ← overlay
+├── top_dress_yellow.png        ← overlay
+├── top_hoodie_pink.png         ← overlay
+├── top_hoodie_blue.png         ← overlay
+├── top_hoodie_yellow.png       ← overlay
+└── README.md
+```
+
+### Stage 2 future structure (when we split files)
+```
+play-and-build/
+├── index.html              ← structure only
+├── style.css               ← all visual styles
+├── app.js                  ← interaction logic
+├── data.js                 ← lists of categories, items, positions
+├── images/
+│   ├── lily/
+│   │   ├── lily_bald.png
+│   │   └── hair/
+│   ├── tops/
+│   ├── bottoms/
+│   ├── accessories/
+│   ├── pets/
+│   └── scenes/
+└── README.md
+```
+
+---
+
+## 🎓 What we've learned
+
+In two sessions, the parent has learned:
+- HTML, CSS, JavaScript fundamentals
+- Repo / commit / push / pull concepts
+- GitHub Pages hosting
+- PWA installation flow
+- Why SVG drawing fails for character art
+- Why overlay architecture beats variant architecture (combinatorial explosion!)
+- AI image generation prompting for character consistency
+- File workflow management on iPad and Mac
+
+That's a real curriculum. 🎓
+
+---
+
+## Glossary (for the beginner)
+
+- **PWA** — Progressive Web App. Installs to home screen, acts like an app.
+- **Repo** — project folder on GitHub.
+- **Commit** — saving a snapshot of changes.
+- **Push** — sending changes to GitHub.
+- **Pull** — downloading changes from GitHub.
+- **Merge** — combining two sets of changes.
+- **Deploy** — making code live online.
+- **Overlay** — transparent-background image stacked on top of another (e.g., hat on Lily).
+- **Layered architecture** — building character from multiple stacked transparent images.
+- **Combinatorial explosion** — when supporting more options means exponentially more combinations to create.
+- **Variant** — a full image with one specific combination baked in.
+- **Asset** — any image, sound, or file used by the app.
+- **Modular** — built from interchangeable pieces.
+
+---
+
+*Last updated: end of Session 2. Hair Style works. Architecture pivoted to overlays. MacBook adopted. Lydia loves her app. Onward to Tops.* 🌸
