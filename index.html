@@ -84,12 +84,15 @@
       pointer-events: none;
     }
 
-    /* 12% is the working standard for full-body outfits, calibrated
-       against outfit_casual.png. All future outfits should be drawn
-       against the same canvas reference so this single offset keeps
+    /* Working standard for full-body outfits, calibrated against
+       outfit_casual.png: top:8% to drop the neckline below Lily's
+       chin, and scale(0.94) to keep the garment proportional to
+       her body (the raw PNG runs ~6% oversized). All future outfits
+       should share the same canvas reference so these values keep
        them aligned. */
     .outfit-overlay {
-      top: 12%;
+      top: 8%;
+      transform: scale(0.94);
     }
 
     .outfit-overlay.hidden,
