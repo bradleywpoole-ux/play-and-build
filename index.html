@@ -231,7 +231,7 @@
 
     <div class="stage">
       <div class="character" id="characterContainer">
-        <img src="lily_long_brown.png" alt="Lily" class="lily" id="lilyImg">
+        <img src="lily.png" alt="Lily" class="lily" id="lilyImg">
         <img src="" alt="" class="outfit-overlay hidden" id="outfitOverlay">
         <img src="" alt="" class="bag-overlay hidden" id="bagOverlay">
         <img src="" alt="" class="jewelry-overlay hidden" id="jewelryOverlay">
@@ -264,13 +264,12 @@
     // ===== Categories =====
     const categories = {
       lily: [
-        { id: 'outfit',     label: '👗 Outfit' },
-        { id: 'hairStyle',  label: '💇 Hair Style' },
-        { id: 'hat',        label: '🎀 Hat' },
-        { id: 'glasses',    label: '👓 Glasses' },
-        { id: 'jewelry',    label: '💎 Jewelry' },
-        { id: 'bag',        label: '🎒 Bag' },
-        { id: 'pet',        label: '🐾 Pet' }
+        { id: 'outfit',  label: '👗 Outfit' },
+        { id: 'hat',     label: '🎀 Hat' },
+        { id: 'glasses', label: '👓 Glasses' },
+        { id: 'jewelry', label: '💎 Jewelry' },
+        { id: 'bag',     label: '🎒 Bag' },
+        { id: 'pet',     label: '🐾 Pet' }
       ],
       world: [
         { id: 'trees',      label: '🌳 Trees' },
@@ -282,16 +281,11 @@
       ]
     };
 
-    // ===== Hair Style options =====
-    // Each option has a label and a filename for the Lily image to display.
-    const hairStyles = [
-      { id: 'long',     label: 'Long',     file: 'lily_long_brown.png' },
-      { id: 'bob',      label: 'Bob',      file: 'lily_bob_brown.png' },
-      { id: 'ponytail', label: 'Ponytail', file: 'lily_ponytail_brown.png' }
-    ];
-
     // ===== Outfit options =====
     // file: null means no overlay (hide it). Outfits cover Lily neck-to-feet.
+    // Hair Style is intentionally NOT a category here: the new canonical
+    // Lily (lily.png) has her hair baked in. Hair Style returns in Phase 5
+    // when hair becomes an overlay layer on a bald base.
     const outfits = [
       { id: 'none',   label: 'None',       file: null },
       { id: 'casual', label: 'Casual Day', file: 'outfit_casual.png' }
@@ -299,7 +293,6 @@
 
     let currentMode = 'lily';
     let activeCategoryId = null;
-    let currentHairStyle = 'long'; // matches the default <img src="lily_long_brown.png">
     let currentOutfit = 'none';
 
     const modeButtons = document.querySelectorAll('.mode-btn');
@@ -333,24 +326,6 @@
     // Render the options row based on what category is active
     function renderOptions() {
       optionsRow.innerHTML = '';
-
-      if (activeCategoryId === 'hairStyle' && currentMode === 'lily') {
-        hairStyles.forEach(function(style) {
-          const btn = document.createElement('div');
-          btn.className = 'option';
-          if (style.id === currentHairStyle) {
-            btn.classList.add('selected');
-          }
-          btn.textContent = style.label;
-          btn.addEventListener('click', function() {
-            currentHairStyle = style.id;
-            lilyImg.src = style.file;
-            renderOptions();
-          });
-          optionsRow.appendChild(btn);
-        });
-        return;
-      }
 
       if (activeCategoryId === 'outfit' && currentMode === 'lily') {
         outfits.forEach(function(outfit) {
