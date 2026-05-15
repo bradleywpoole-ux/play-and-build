@@ -55,12 +55,36 @@
       padding-bottom: 20px;
     }
 
-    .lily {
+    .character {
+      position: relative;
       max-height: 90%;
       max-width: 60%;
+      display: grid;
+      place-items: end center;
+    }
+
+    .lily {
+      grid-area: 1 / 1;
+      max-height: 100%;
+      max-width: 100%;
       height: auto;
       width: auto;
       object-fit: contain;
+      display: block;
+    }
+
+    .lily-overlay {
+      grid-area: 1 / 1;
+      max-height: 100%;
+      max-width: 100%;
+      height: auto;
+      width: auto;
+      object-fit: contain;
+      pointer-events: none;
+    }
+
+    .lily-overlay.hidden {
+      display: none;
     }
 
     /* ===== MODE TOGGLE (Row 1) ===== */
@@ -190,7 +214,10 @@
     <div class="header">🎨 Play &amp; Build</div>
 
     <div class="stage">
-      <img src="lily_long_brown.png" alt="Lily" class="lily" id="lilyImg">
+      <div class="character">
+        <img src="lily_long_brown.png" alt="Lily" class="lily" id="lilyImg">
+        <img src="" alt="" class="lily-overlay hidden" id="topOverlay">
+      </div>
     </div>
 
     <!-- Row 1: Mode Toggle -->
@@ -240,18 +267,26 @@
     const hairStyles = [
       { id: 'long',     label: 'Long',     file: 'lily_long_brown.png' },
       { id: 'bob',      label: 'Bob',      file: 'lily_bob_brown.png' },
-      { id: 'ponytail', label: 'Ponytail', file: 'lily_ponytail_brown.png' },
-      { id: 'bald',     label: 'Bald',     file: 'lily_bald.png' }
+      { id: 'ponytail', label: 'Ponytail', file: 'lily_ponytail_brown.png' }
+    ];
+
+    // ===== Top options =====
+    // file: null means no overlay (hide it).
+    const tops = [
+      { id: 'none',   label: 'None',        file: null },
+      { id: 'hoodie', label: 'Pink Hoodie', file: 'top_hoodie_pink.png' }
     ];
 
     let currentMode = 'lily';
     let activeCategoryId = null;
     let currentHairStyle = 'long'; // matches the default <img src="lily_long_brown.png">
+    let currentTop = 'none';
 
     const modeButtons = document.querySelectorAll('.mode-btn');
     const categoriesInner = document.getElementById('categoriesInner');
     const optionsRow = document.getElementById('optionsRow');
     const lilyImg = document.getElementById('lilyImg');
+    const topOverlay = document.getElementById('topOverlay');
 
     // Render the categories row
     function renderCategories() {
@@ -279,7 +314,6 @@
     function renderOptions() {
       optionsRow.innerHTML = '';
 
-      // Hair Style is the only one that's actually wired up right now
       if (activeCategoryId === 'hairStyle' && currentMode === 'lily') {
         hairStyles.forEach(function(style) {
           const btn = document.createElement('div');
@@ -291,6 +325,30 @@
           btn.addEventListener('click', function() {
             currentHairStyle = style.id;
             lilyImg.src = style.file;
+            renderOptions();
+          });
+          optionsRow.appendChild(btn);
+        });
+        return;
+      }
+
+      if (activeCategoryId === 'top' && currentMode === 'lily') {
+        tops.forEach(function(top) {
+          const btn = document.createElement('div');
+          btn.className = 'option';
+          if (top.id === currentTop) {
+            btn.classList.add('selected');
+          }
+          btn.textContent = top.label;
+          btn.addEventListener('click', function() {
+            currentTop = top.id;
+            if (top.file) {
+              topOverlay.src = top.file;
+              topOverlay.classList.remove('hidden');
+            } else {
+              topOverlay.classList.add('hidden');
+              topOverlay.removeAttribute('src');
+            }
             renderOptions();
           });
           optionsRow.appendChild(btn);
