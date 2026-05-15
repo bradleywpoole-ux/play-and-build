@@ -84,6 +84,14 @@
       pointer-events: none;
     }
 
+    /* Outfit-specific offset: outfits sit lower so the neckline aligns
+       with Lily's actual neck, not her chin. All future outfits assume
+       this same offset, so they should be drawn in the canvas at the
+       neckline-up position the offset corrects for. */
+    .outfit-overlay {
+      top: 8%;
+    }
+
     .outfit-overlay.hidden,
     .hat-overlay.hidden,
     .glasses-overlay.hidden,
