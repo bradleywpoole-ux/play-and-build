@@ -70,7 +70,6 @@
       object-fit: contain;
     }
 
-    .outfit-overlay,
     .hat-overlay,
     .glasses-overlay,
     .jewelry-overlay,
@@ -84,18 +83,6 @@
       pointer-events: none;
     }
 
-    /* Working standard for full-body outfits, calibrated against
-       outfit_casual.png: top:8% to drop the neckline below Lily's
-       chin, and scale(0.94) to keep the garment proportional to
-       her body (the raw PNG runs ~6% oversized). All future outfits
-       should share the same canvas reference so these values keep
-       them aligned. */
-    .outfit-overlay {
-      top: 8%;
-      transform: scale(0.94);
-    }
-
-    .outfit-overlay.hidden,
     .hat-overlay.hidden,
     .glasses-overlay.hidden,
     .jewelry-overlay.hidden,
@@ -232,7 +219,6 @@
     <div class="stage">
       <div class="character" id="characterContainer">
         <img src="lily.png" alt="Lily" class="lily" id="lilyImg">
-        <img src="" alt="" class="outfit-overlay hidden" id="outfitOverlay">
         <img src="" alt="" class="bag-overlay hidden" id="bagOverlay">
         <img src="" alt="" class="jewelry-overlay hidden" id="jewelryOverlay">
         <img src="" alt="" class="glasses-overlay hidden" id="glassesOverlay">
@@ -282,10 +268,12 @@
     };
 
     // ===== Outfit options =====
-    // file: null means no overlay (hide it). Outfits cover Lily neck-to-feet.
-    // Hair Style is intentionally NOT a category here: the new canonical
-    // Lily (lily.png) has her hair baked in. Hair Style returns in Phase 5
-    // when hair becomes an overlay layer on a bald base.
+    // Outfits are now full Lily-in-outfit images, NOT transparent overlays.
+    // Selecting an outfit swaps the main lilyImg.src; 'None' reverts to the
+    // base lily.png. file: null means use the base lily.png.
+    // Hair Style is intentionally NOT a category here: the canonical Lily
+    // (lily.png) has her hair baked in. Hair Style returns in Phase 5 when
+    // hair becomes an overlay layer on a bald base.
     const outfits = [
       { id: 'none',   label: 'None',       file: null },
       { id: 'casual', label: 'Casual Day', file: 'outfit_casual.png' }
@@ -299,7 +287,6 @@
     const categoriesInner = document.getElementById('categoriesInner');
     const optionsRow = document.getElementById('optionsRow');
     const lilyImg = document.getElementById('lilyImg');
-    const outfitOverlay = document.getElementById('outfitOverlay');
 
     // Render the categories row
     function renderCategories() {
@@ -337,13 +324,7 @@
           btn.textContent = outfit.label;
           btn.addEventListener('click', function() {
             currentOutfit = outfit.id;
-            if (outfit.file) {
-              outfitOverlay.src = outfit.file;
-              outfitOverlay.classList.remove('hidden');
-            } else {
-              outfitOverlay.classList.add('hidden');
-              outfitOverlay.removeAttribute('src');
-            }
+            lilyImg.src = outfit.file || 'lily.png';
             renderOptions();
           });
           optionsRow.appendChild(btn);
